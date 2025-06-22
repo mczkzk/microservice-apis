@@ -1,0 +1,40 @@
+{
+  "permissions": {
+    "allow": [
+      "Read(**)",
+      "Write(**)",
+      "Edit(**)",
+      "Glob(**)",
+      "Grep(**)",
+      "LS(**)",
+
+      "Bash(git:*)",
+      "Bash(gh:*)",
+      "Bash(npm:*)",
+      "Bash(pnpm:*)",
+      "Bash(yarn:*)",
+      "Bash(node:*)",
+
+      "Bash(ls:*)",
+      "Bash(mv:*)",
+      "Bash(cp:*)",
+      "Bash(mkdir:*)",
+      "Bash(touch:*)",
+      "Bash(chmod:*)",
+      "Bash(grep:*)",
+      "Bash(rg:*)",
+      "Bash(find:*)",
+      "Bash(tar:*)",
+      "Bash(unzip:*)",
+      "Bash(echo:*)",
+      "Bash(cat:*)",
+      "Bash(pwd:*)",
+
+      "WebFetch(domain:*)"
+    ],
+    "deny": [
+    ]
+  },
+  "env": {
+  }
+}
