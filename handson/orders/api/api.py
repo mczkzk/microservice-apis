@@ -15,6 +15,17 @@ from orders.api.schemas import (
 
 orders = []
 
+# orders = [
+#     # どれかプロパティ消してリクエストするとエラーになる
+#     # 開発時は実際にAPIをテストして確認する必要がある
+#     {
+#         "order": [{"product": "string", "size": "small", "quantity": 1}],
+#         "id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+#         "created": "2025-06-29T14:12:54.221Z",
+#         "status": "created",
+#     }
+# ]
+
 
 @app.get("/orders", response_model=GetOrdersSchema)
 def get_orders():
