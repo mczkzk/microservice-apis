@@ -1,5 +1,6 @@
 import uuid
 from datetime import datetime
+from typing import Optional
 from uuid import UUID
 
 from fastapi import HTTPException
@@ -28,8 +29,22 @@ orders = []
 
 
 @app.get("/orders", response_model=GetOrdersSchema)
-def get_orders():
-    return {"orders": orders}
+def get_orders(cancelled: Optional[bool] = None, limit: Optional[int] = None):
+    if cancelled is None and limit is None:
+        return {"orders": orders}
+
+    query_set = [order for order in orders]
+
+    if cancelled is not None:
+        if cancelled:
+            query_set = [order for order in query_set if order["status"] == "cancelled"]
+        else:
+            query_set = [order for order in query_set if order["status"] != "cancelled"]
+
+    if limit is not None and len(query_set) > limit:
+        return {"orders": query_set[:limit]}
+
+    return {"orders": query_set}
 
 
 @app.post(
