@@ -241,6 +241,7 @@ components:
             $ref: '#/components/schemas/OrderItemSchema'
 
     GetOrderSchema:
+      additionalProperties: false
       type: object
       required:
         - id

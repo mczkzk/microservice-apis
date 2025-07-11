@@ -3,7 +3,7 @@ from enum import Enum
 from typing import List, Optional
 from uuid import UUID
 
-from pydantic import BaseModel, conint, validator, conlist
+from pydantic import BaseModel, Extra, conint, validator, conlist
 
 
 class Size(Enum):
@@ -26,6 +26,10 @@ class OrderItemSchema(BaseModel):
     size: Size
     quantity: Optional[conint(ge=1, strict=True)] = 1
 
+    # スキーマで定義されていないフィールドはエラーにする
+    class Config:
+        extra = Extra.forbid
+
     # バリデーションを追加
     @validator("quantity")  # 対象フィールドを指定
     def quantity_non_nullable(cls, value):
@@ -35,6 +39,9 @@ class OrderItemSchema(BaseModel):
 
 class CreateOrderSchema(BaseModel):
     order: conlist(OrderItemSchema, min_length=1)
+
+    class Config:
+        extra = Extra.forbid
 
 
 class GetOrderSchema(CreateOrderSchema):
