@@ -12,40 +12,42 @@ def generate_uuid():
     return str(uuid.uuid4())
 
 
+# model はデータベースのテーブルを表す
 class OrderModel(Base):
-    __tablename__ = 'order'
+    __tablename__ = "order"
 
     id = Column(String, primary_key=True, default=generate_uuid)
-    items = relationship('OrderItemModel', backref='order')
-    status = Column(String, nullable=False, default='created')
+    # 1対多の関係を表す
+    items = relationship("OrderItemModel", backref="order")
+    status = Column(String, nullable=False, default="created")
     created = Column(DateTime, default=datetime.utcnow)
     schedule_id = Column(String)
     delivery_id = Column(String)
 
     def dict(self):
         return {
-            'id': self.id,
-            'items': [item.dict() for item in self.items],
-            'status': self.status,
-            'created': self.created,
-            'schedule_id': self.schedule_id,
-            'delivery_id': self.delivery_id,
+            "id": self.id,
+            "items": [item.dict() for item in self.items],
+            "status": self.status,
+            "created": self.created,
+            "schedule_id": self.schedule_id,
+            "delivery_id": self.delivery_id,
         }
 
 
 class OrderItemModel(Base):
-    __tablename__ = 'order_item'
+    __tablename__ = "order_item"
 
     id = Column(String, primary_key=True, default=generate_uuid)
-    order_id = Column(Integer, ForeignKey('order.id'))
+    order_id = Column(Integer, ForeignKey("order.id"))
     product = Column(String, nullable=False)
     size = Column(String, nullable=False)
     quantity = Column(Integer, nullable=False)
 
     def dict(self):
         return {
-            'id': self.id,
-            'product': self.product,
-            'size': self.size,
-            'quantity': self.quantity
+            "id": self.id,
+            "product": self.product,
+            "size": self.size,
+            "quantity": self.quantity,
         }
