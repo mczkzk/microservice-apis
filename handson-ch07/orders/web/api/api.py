@@ -40,6 +40,7 @@ def create_order(payload: CreateOrderSchema):
             item["size"] = item["size"].value
         order = orders_service.place_order(order)
         unit_of_work.commit()
+        # コミットして注文IDが確定
         return_payload = order.dict()
     return return_payload
 
