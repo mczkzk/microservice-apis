@@ -5,6 +5,7 @@ from ariadne import UnionType, ScalarType, InterfaceType, ObjectType
 
 from web.data import ingredients, suppliers, products
 
+# バインド可能オブジェクトを作成
 product_interface = InterfaceType("ProductInterface")
 product_type = UnionType("Product")
 ingredient_type = ObjectType("Ingredient")
@@ -18,6 +19,7 @@ def serialize_datetime_scalar(date):
     return date.isoformat()
 
 
+# 検証とデシリアライズ
 @datetime_scalar.value_parser
 def parse_datetime_scalar(date):
     return datetime.fromisoformat(date)
@@ -32,6 +34,7 @@ def resolve_product_type(obj, *_):
 
 @product_interface.field("ingredients")
 def resolve_product_ingredients(product, _):
+    # 各原材料のコピーを作成
     recipe = [copy.copy(ingredient) for ingredient in product.get("ingredients", [])]
     for ingredient_recipe in recipe:
         for ingredient in ingredients:
