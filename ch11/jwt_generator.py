@@ -5,6 +5,7 @@ import jwt
 from cryptography.hazmat.primitives import serialization
 
 
+# テスト用のJWTを生成
 def generate_jwt():
     now = datetime.utcnow()
     payload = {
@@ -16,6 +17,7 @@ def generate_jwt():
         "scope": "openid",
     }
 
+    # 秘密鍵を読み込む
     private_key_text = Path("private_key.pem").read_text()
     private_key = serialization.load_pem_private_key(
         private_key_text.encode(),

@@ -9,8 +9,10 @@ class OrdersService:
     def place_order(self, items, user_id):
         return self.orders_repository.add(items, user_id)
 
-    def get_order(self, order_id, **filters):
-        order = self.orders_repository.get(order_id, **filters)
+    def get_order(self, order_id, **filters):  # ← **filtersでuser_idを受け取る
+        order = self.orders_repository.get(
+            order_id, **filters  # ← **filtersをそのまま渡す
+        )
         if order is not None:
             return order
         raise OrderNotFoundError(f"Order with id {order_id} not found")

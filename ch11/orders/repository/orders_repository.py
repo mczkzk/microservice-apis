@@ -17,8 +17,10 @@ class OrdersRepository:
     def _get(self, id_, **filters):
         return (
             self.session.query(OrderModel)
-            .filter(OrderModel.id == str(id_))
-            .filter_by(**filters)
+            .filter(OrderModel.id == str(id_))  # ← リソース特定
+            .filter_by(
+                **filters  # ← 認可フィルター　ユーザーアクセス権限をチェック（user_idフィルター）
+            )
             .first()
         )
 

@@ -40,12 +40,13 @@ class AuthorizeRequestMiddleware(BaseHTTPMiddleware):
             request.state.user_id = "test"
             return await call_next(request)
 
+        # ドキュメントとOpenAPI仕様書は認証をスキップ
         if request.url.path in ["/docs/orders", "/openapi/orders.json"]:
             return await call_next(request)
         if request.method == "OPTIONS":
             return await call_next(request)
 
-        bearer_token = request.headers.get("Authorization")
+        bearer_token = request.headers.get("Authorization")  # Authorizationヘッダー全体
         if not bearer_token:
             return JSONResponse(
                 status_code=status.HTTP_401_UNAUTHORIZED,
@@ -55,8 +56,8 @@ class AuthorizeRequestMiddleware(BaseHTTPMiddleware):
                 },
             )
         try:
-            auth_token = bearer_token.split(" ")[1].strip()
-            token_payload = decode_and_validate_token(auth_token)
+            auth_token = bearer_token.split(" ")[1].strip()  # トークン部分を取得 JWT
+            token_payload = decode_and_validate_token(auth_token)  # トークンの検証
         except (
             ExpiredSignatureError,
             ImmatureSignatureError,
@@ -67,6 +68,7 @@ class AuthorizeRequestMiddleware(BaseHTTPMiddleware):
             InvalidTokenError,
             MissingRequiredClaimError,
         ) as error:
+            # 認証エラーの場合は401 Unauthorizedを返す
             return JSONResponse(
                 status_code=status.HTTP_401_UNAUTHORIZED,
                 content={"detail": str(error), "body": str(error)},
@@ -81,10 +83,10 @@ app.add_middleware(AuthorizeRequestMiddleware)
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
+    allow_origins=["*"],  # 全てのオリジンを許可
+    allow_credentials=True,  # クロスオリジンリクエストの Cookie をサポート
+    allow_methods=["*"],  # 全てのHTTPメソッドを許可
+    allow_headers=["*"],  # 全てのヘッダーを許可
 )
 
 
