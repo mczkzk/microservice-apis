@@ -25,14 +25,14 @@ def before_get_order(transaction):
     transaction["request"]["uri"] = "/orders/" + response_stash["created_order_id"]
 
 
-order_item_strategy = st.fixed_dictionaries(
-    {
-        "product": values_strategy,
-        "size": st.one_of(st.sampled_from(("small", "medium", "big")))
-        | values_strategy,
-        "quantity": values_strategy,
-    }
-)
+# order_item_strategy = st.fixed_dictionaries(
+#     {
+#         "product": values_strategy,
+#         "size": st.one_of(st.sampled_from(("small", "medium", "big")))
+#         | values_strategy,
+#         "quantity": values_strategy,
+#     }
+# )
 
 
 @dredd_hooks.before(
@@ -54,6 +54,7 @@ def before_delete_order(transaction):
     "application/json"
 )
 def before_pay_order(transaction):
+    # 新しい注文を作成
     response = requests.post(
         "http://127.0.0.1:8000/orders",
         json={"order": [{"product": "string", "size": "small", "quantity": 1}]},
@@ -76,8 +77,19 @@ def before_cancel_order(transaction):
     transaction["request"]["uri"] = "/orders/" + id_ + "/cancel"
 
 
+# スキーマに 422 と書いてあれば、dreddは422エラーテストケースを作る
+# でも、どんなデータを送れば422エラーになるかは分からない
+# Dreddが適当に作ったデータを、確実に422エラーになるデータに変更
+@dredd_hooks.before("/orders > Returns a list of orders > 422 > application/json")
+def fail_get_orders(transaction):
+    # limitパラメータに不正な値を設定
+    transaction["fullPath"] = "/orders?limit=invalid"
+    transaction["request"]["uri"] = "/orders?limit=invalid"
+
+
 @dredd_hooks.before("/orders > Creates an order > 422 > application/json")
 def fail_create_order(transaction):
+    # sizeが不正な値
     transaction["request"]["body"] = json.dumps(
         {"order": [{"product": "string", "size": "asdf"}]}
     )
@@ -101,6 +113,7 @@ def fail_create_order(transaction):
     "/orders/{order_id} > Deletes an existing order > 422 > " "application/json"
 )
 def fail_target_specific_order(transaction):
+    # URIを無効なID（整数）に変更
     transaction["fullPath"] = transaction["fullPath"].replace(
         "d222e7a3-6afb-463a-9709-38eb70cc670d", "8"
     )
